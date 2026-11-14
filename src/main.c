@@ -2,7 +2,7 @@
 #include <gsKit.h>
 #include <dmaKit.h>
 
-int main(void)
+int main(voi)
 {
     GSGLOBAL *gs = gsKit_init_global();
 
