@@ -1,35 +1,31 @@
-#include <kernel.h>
-#include <gsKit.h>
-#include <dmaKit.h>
+#include <stdio.h>
+#include "player.h"
+#include "combat.h"
+#include "ai_npc.h"
 
-int main(void)
-{
-    GSGLOBAL *gs = gsKit_init_global();
+NPCGuard guard;
 
-    dmaKit_init(D_CTRL_RELE_OFF, D_CTRL_MFD_OFF, D_CTRL_STS_UNSPEC,
-                D_CTRL_STD_OFF, D_CTRL_RCYC_8, 1 << DMA_CHANNEL_GIF);
-    dmaKit_chan_init(DMA_CHANNEL_GIF);
+int main(){
+    Player_Init();
+    guard.alive=1;
+    guard.alert_level=0;
 
-    gsKit_init_screen(gs);
-    gsKit_mode_switch(gs, GS_ONESHOT);
+    float delta=0.016f; // ~60FPS
 
-    u64 black = GS_SETREG_RGBAQ(0x00, 0x00, 0x00, 0x00, 0x00);
-    u64 red   = GS_SETREG_RGBAQ(0xFF, 0x00, 0x00, 0x00, 0x00);
+    while(1){
+        Player_Update(delta);
+        NPC_Update(&guard, player.x, player.z, delta);
 
-    float x = 100.0f;
-
-    while (1) {
-        gsKit_clear(gs, black);
-
-        /* ตัวละครชั่วคราว */
-        gsKit_prim_sprite(gs, x, 200, x + 32, 264, 0, red);
-
-        x += 2.0f;
-        if (x > gs->Width) x = 0;
-
-        gsKit_queue_exec(gs);
-        gsKit_sync_flip(gs);
+        // ตัวอย่างทริกเกอร์ฆ่าเงียบ (กดปุ่มสมมติ)
+        /*
+        if( ปุ่มกด ){
+            if(Combat_CheckCanSilentKill(player.x,player.z,guard.x,guard.z,guard.rot)){
+                Combat_PlayFinisher(FINISHER_BACK_SILENT);
+                guard.alive=0;
+            }
+        }
+        */
+        // Render (ใส่โค้ดเรนเดอร์จาก PS2 SDK ตรงนี้)
     }
-
     return 0;
 }
