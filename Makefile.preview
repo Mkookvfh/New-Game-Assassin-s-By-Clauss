@@ -1,0 +1,11 @@
+# Host preview build (no PS2 toolchain needed)
+CC      ?= gcc
+CFLAGS  ?= -O2 -g -Wall -Wno-unused-parameter -Wno-misleading-indentation -Isrc
+SRC      = src/mesh.c src/world.c src/actors.c src/game.c src/font.c \
+           src/materials_data.c
+
+preview: $(SRC) tools/preview_host.c src/game.h
+	$(CC) $(CFLAGS) -o preview $(SRC) tools/preview_host.c -lm
+
+clean:
+	rm -f preview
